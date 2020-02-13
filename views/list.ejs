@@ -7,14 +7,14 @@
 
   <div class="box">
 
-    <% for (newListItem of newListItems) { %>
+    <% newListItems.forEach(newListItem => { %>
 
     <div class="item">
       <input type="checkbox">
-      <p><%= newListItem %></p>
+      <p><%= newListItem.name %></p>
     </div>
 
-    <% } %>
+    <% }); %>
 
     <form class="" action="/" method="post">
       <input type="text" name="newItem" placeholder="New Item" autocomplete="off">
