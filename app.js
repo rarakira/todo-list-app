@@ -1,12 +1,13 @@
-//jshint esversion:6
-
 const express = require("express");
 const ejs = require("ejs");
+const date = require(__dirname + "/date.js");
 
 const app = express();
 
-let items = ["Buy Food", "Cook food", "Eat food"];
-let workItems = [];
+const items = ["Buy Food", "Cook food", "Eat food"];
+const workItems = [];
+
+const year = date.getYear();
 
 app.set("view engine", "ejs");
 
@@ -15,23 +16,14 @@ app.use(express.static("public"));
 
 app.get("/", function(req, res){
 
-  let today = new Date();
-
-  let options = {
-    weekday: "long",
-    day: "numeric",
-    month: "long"
-  };
-
-  let day = today.toLocaleDateString("en-GB", options);
-
-  res.render("list", {listTitle: day, newListItems: items});
+  const day = date.getDate();
+  res.render("list", {listTitle: day, newListItems: items, year: year});
 
 });
 
 app.post("/", function(req, res){
 
-  let item = req.body.newItem;
+  const item = req.body.newItem;
 
   if (req.body.list === "Work list") {
     workItems.push(item);
@@ -44,11 +36,11 @@ app.post("/", function(req, res){
 });
 
 app.get("/work", function (req, res) {
-  res.render("list", {listTitle: "Work list", newListItems: workItems});
+  res.render("list", {listTitle: "Work list", newListItems: workItems, year: year});
 });
 
 app.get("/about", function (req, res) {
-  res.render("about");
+  res.render("about", {year: year});
 })
 
 app.listen(3000, function(){
