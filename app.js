@@ -53,19 +53,19 @@ const List = mongoose.model("List", listSchema);
 
 app.get("/", (req, res) => {
 
-  Item.find({}, (err, dbItems) => {
+  Item.find({}, (err, foundItems) => {
 
     if (err) {
       console.log(err);
     } else {
 
-      if (dbItems.length === 0) {
+      if (foundItems.length === 0) {
         Item.insertMany(defaultItems, (err) => {
           (err) ? console.log(err): console.log("Successfully added default items!");
           res.redirect("/");
         });
       } else {
-        res.render("list", {listTitle: "Today", newListItems: dbItems, year: year});
+        res.render("list", {listTitle: "Today", newListItems: foundItems, year: year});
       }
     }
   });
@@ -83,19 +83,15 @@ app.post("/", function(req, res) {
   if (listTitle === "Today") {
 
     itemNew.save();
+    console.log("The item \"" + itemNew.name + "\" has been added to the " + listTitle + " list!");
     res.redirect("/");
 
   } else {
 
-    List.findOne({name: listTitle}, (err, foundList) => {
+    List.findOneAndUpdate({name: listTitle}, {$push: {items: itemNew}}, (err, foundList) => {
       if (!err) {
-
-        foundList.items.push(itemNew);
-        foundList.save();
-
         console.log("The item \"" + itemNew.name + "\" has been added to the " + listTitle + " list!");
-
-        res.redirect("/" + listTitle);
+        res.redirect("/" + listTitle)
       }
     });
 
@@ -123,13 +119,11 @@ app.post("/delete", (req, res) => {
 
     List.findOneAndUpdate({name: listName}, {$pull: {items: {_id: checkedItemID}}}, (err, foundList) => {
       if (!err) {
-
         res.redirect("/" + listName);
       }
     });
 
   }
-
 
 });
 
