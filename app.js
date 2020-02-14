@@ -64,16 +64,34 @@ app.get("/", (req, res) => {
 
 app.post("/", function(req, res) {
 
-  const item = req.body.newItem;
+  const itemName = req.body.newItem;
 
-  if (req.body.list === "Work list") {
-    workItems.push(item);
-    res.redirect("/work");
-  } else {
-    items.push(item);
-    res.redirect("/");
-  }
+  const itemNew = new Item ({
+    name: itemName
+  })
 
+  itemNew.save();
+  res.redirect("/");
+
+  // if (req.body.list === "Work list") {
+  //   workItems.push(item);
+  //   res.redirect("/work");
+  // } else {
+  //   items.push(item);
+  //   res.redirect("/");
+  // }
+
+});
+
+app.post("/delete", (req, res) => {
+  Item.findByIdAndRemove(req.body.checkbox, (err) =>{
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("The item was successfully deleted!");
+    }
+  });
+  res.redirect("/");
 });
 
 app.get("/work", function(req, res) {
